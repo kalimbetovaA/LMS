@@ -1,6 +1,7 @@
 package kz.iitu.demo;
 
 import kz.iitu.demo.config.SpringConfigration;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -8,11 +9,12 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public class LmsApplication {
 
     public static void main(String[] args) {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(SpringConfigration.class);
-
-
-        LMS lms = context.getBean(LMS.class);
-        lms.showMenu();
+        SpringApplication.run(LmsApplication.class, args);
+//        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(SpringConfigration.class);
+//
+//
+//        LMS lms = context.getBean(LMS.class);
+//        lms.showMenu();
     }
 
 }

@@ -6,40 +6,52 @@ import kz.iitu.demo.entity.BookStatus;
 import kz.iitu.demo.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 
-@Controller
+
+@RestController
+@RequestMapping("/books")
 public class BookController {
 
     @Autowired
     private BookService bookService;
 
+    @GetMapping("")
     public List<Book> getAll() {
         return bookService.findAllBooks();
     }
 
-    public List<Book> findBookByStatus(BookStatus bookStatus) {
+    @GetMapping("/find/")
+    public List<Book> findBookByStatus(@RequestParam BookStatus bookStatus) {
         return bookService.findByStatus(bookStatus);
     }
 
-    public Book findBookById(Long id) {
+    @GetMapping("/{id}")
+    public Book findBookById(@PathVariable Long id) {
         return bookService.findBookById(id);
     }
 
-    public List<Book> searchBooks(String keyword) {
+    @GetMapping("/search/")
+    public List<Book> searchBooks(@RequestParam String keyword) {
         return bookService.searchBooks(keyword);
     }
 
-    public void addBook(Book book) {
+    @PostMapping("")
+    public void addBook(@RequestBody Book book) {
         bookService.addBook(book);
     }
 
-    public void deleteBook(Long id) {
+    @DeleteMapping("/{id}")
+    public void deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
     }
-    public void updateBook(Book book) {
+
+    @PutMapping("/{id}")
+    public void updateBook(@PathVariable Long id,@RequestBody Book book) {
+        book.setId(id);
         bookService.updateBook(book);
     }
 

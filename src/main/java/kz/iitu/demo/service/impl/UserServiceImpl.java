@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void addUser(User user) {
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
     }
 
     @Override
@@ -38,6 +38,18 @@ public class UserServiceImpl implements UserService {
 
         if (userOptional.isPresent()) {
             userRepository.deleteById(id);
+        }
+    }
+
+    @Override
+    public void updateUser(User user) {
+        Optional<User> userOptional = userRepository.findById(user.getId());
+
+        if (userOptional.isPresent()) {
+            User dbUser = userOptional.get();
+            dbUser.setUsername(user.getUsername());
+            dbUser.setBooks(user.getBooks());
+            userRepository.saveAndFlush(dbUser);
         }
     }
 }

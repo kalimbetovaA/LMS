@@ -34,7 +34,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public void addAuthor(Author author) {
-        authorRepository.save(author);
+        authorRepository.saveAndFlush(author);
     }
 
     @Override
@@ -43,6 +43,18 @@ public class AuthorServiceImpl implements AuthorService {
 
         if (authorOptional.isPresent()) {
             authorRepository.deleteById(id);
+        }
+    }
+
+    @Override
+    public void updateAuthor(Author author) {
+        Optional<Author> authorOptional = authorRepository.findById(author.getId());
+
+        if (authorOptional.isPresent()) {
+            Author dbAuthor = authorOptional.get();
+            dbAuthor.setName(author.getName());
+            dbAuthor.setBooks(author.getBooks());
+            authorRepository.saveAndFlush(dbAuthor);
         }
     }
 }

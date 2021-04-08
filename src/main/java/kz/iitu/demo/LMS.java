@@ -10,6 +10,7 @@ import kz.iitu.demo.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -29,10 +30,10 @@ public class LMS {
 
         while (true) {
             System.out.println("What do you want to do: ");
-            System.out.println("1 - Request Book\n" +
-                    "2 - Issue Book\n" +
-                    "3 - Return Book\n" +
-                    "4 - Add Book\n" +
+            System.out.println("1 - Add Book\n" +
+                    "2 - Request Book\n" +
+                    "3 - Issue Book\n" +
+                    "4 - Return Book\n" +
                     "5 - Search for Books by title, description, author\n" +
                     "6 - Show Requested, Issued, Returned Books\n" +
                     "7 - Show available books\n" +
@@ -40,16 +41,16 @@ public class LMS {
             int choice = sc.nextInt();
             switch (choice){
                 case 1:
-                    updateBook(BookStatus.REQUESTED);
+                    addBook();
                     break;
                 case 2:
-                    updateBook(BookStatus.ISSUED);
+                    updateBook(BookStatus.REQUESTED);
                     break;
                 case 3:
-                    updateBook(BookStatus.RETURNED);
+                    updateBook(BookStatus.ISSUED);
                     break;
                 case 4:
-                    addBook();
+                    updateBook(BookStatus.RETURNED);
                     break;
                 case 5:
                     searchBook();
@@ -79,6 +80,12 @@ public class LMS {
         }
     }
 
+    public void showAuthors(List<Author> authors){
+        for (Author a:authors) {
+            System.out.println(a.toString());
+        }
+    }
+
     public void showUsers(){
         List<User> users=userController.findAllUsers();
         for (User u:users) {
@@ -98,11 +105,19 @@ public class LMS {
         showUsers();
         User user=userController.findUserById(sc.nextLong());
         System.out.println("Choose book: ");
-        showBooks();
+        if(bookStatus==BookStatus.RETURNED){
+            showUserBooks(user, BookStatus.ISSUED);
+        }else if(bookStatus==BookStatus.ISSUED){
+            showUserBooks(user, BookStatus.REQUESTED);
+        }
+        else if(bookStatus==BookStatus.REQUESTED){
+            showBooks(BookStatus.AVAILABLE);
+            showBooks(BookStatus.RETURNED);
+        }
         Book book=bookController.findBookById(sc.nextLong());
         book.setStatus(bookStatus);
         book.setUser(user);
-        bookController.updateBook(book);
+        bookController.updateBook(book.getId(), book);
     }
 
     public void addBook(){
@@ -111,15 +126,20 @@ public class LMS {
         book.setTitle(sc.next());
         System.out.println("Enter description: ");
         book.setDescription(sc.next());
-        System.out.println("Enter author name: ");
-        String authorName=sc.next();
-        Author author = authorController.findAuthorByName(authorName);
-        author.setName(authorName);
-        book.setAuthor(author);
-        System.out.println("Choose user: ");
-        showUsers();
-        User user=userController.findUserById(sc.nextLong());
-        book.setUser(user);
+        List<Author> authors = new ArrayList<>();
+        while (true) {
+            System.out.println("Choose author of the book: ");
+            showAuthors(authorController.findAllAuthors());
+            System.out.println("0 - Done");
+            Long authorId=sc.nextLong();
+            if(authorId==0) {
+                break;
+            }
+            Author author = authorController.findAuthorById(authorId);
+            authors.add(author);
+
+        }
+        book.setAuthors(authors);
         book.setStatus(BookStatus.AVAILABLE);
 
         bookController.addBook(book);
@@ -138,7 +158,10 @@ public class LMS {
         List<Book> books = bookController.findBookByStatus(BookStatus.AVAILABLE);
         books.addAll(bookController.findBookByStatus(BookStatus.RETURNED));
         for (Book b:books) {
-            System.out.println(b.getTitle()+"\nDescription: "+b.getDescription()+"\nAuthor: "+b.getAuthor().getName());
+            System.out.println(b.getTitle()+
+                    "\nDescription: "+b.getDescription()+"" +
+                    "\nAuthors: ");
+                    showAuthors(b.getAuthors());
             System.out.println();
         }
     }
@@ -149,6 +172,15 @@ public class LMS {
         List<Book> books=bookController.findBookByStatus(bookStatus);
         for (Book b:books) {
             System.out.println(b.toString());
+        }
+    }
+
+    public void showUserBooks(User user, BookStatus bookStatus){
+        List<Book> books=bookController.findBookByStatus(bookStatus);
+        for (Book b:books) {
+            if(b.getUser().getUsername().equals(user.getUsername())){
+                System.out.println(b.toString());
+            }
         }
     }
 

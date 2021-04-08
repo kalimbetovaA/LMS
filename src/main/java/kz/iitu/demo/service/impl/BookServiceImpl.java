@@ -41,7 +41,7 @@ public class BookServiceImpl implements BookService{
 
     @Override
     public void addBook(Book book) {
-        bookRepository.save(book);
+        bookRepository.saveAndFlush(book);
     }
 
     @Override
@@ -62,10 +62,10 @@ public class BookServiceImpl implements BookService{
             Book dbBook = bookOptional.get();
             dbBook.setTitle(book.getTitle());
             dbBook.setDescription(book.getDescription());
-            dbBook.setAuthor(book.getAuthor());
+            dbBook.setAuthors(book.getAuthors());
             dbBook.setStatus(book.getStatus());
             dbBook.setUser(book.getUser());
-            bookRepository.save(dbBook);
+            bookRepository.saveAndFlush(dbBook);
         }
     }
 }

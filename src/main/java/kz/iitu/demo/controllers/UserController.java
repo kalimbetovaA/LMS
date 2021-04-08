@@ -1,14 +1,17 @@
 package kz.iitu.demo.controllers;
 
+import kz.iitu.demo.entity.Author;
 import kz.iitu.demo.entity.User;
 import kz.iitu.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 
-@Controller
+@RestController
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
@@ -18,21 +21,30 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("")
     public List<User> findAllUsers() {
         return userService.findAllUsers();
     }
 
-    public User findUserById(Long id) {
+    @GetMapping("/{id}")
+    public User findUserById(@PathVariable Long id) {
         return userService.findUserById(id);
     }
 
-    public void addUser(User user) {
+    @PostMapping("")
+    public void addUser(@RequestBody User user) {
         userService.addUser(user);
     }
 
-    public void deleteUser(Long id) {
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
     }
 
 
+    @PutMapping("/{id}")
+    public void updateUser(@PathVariable Long id,@RequestBody User user) {
+        user.setId(id);
+        userService.updateUser(user);
+    }
 }

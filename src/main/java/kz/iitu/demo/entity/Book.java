@@ -1,6 +1,7 @@
 package kz.iitu.demo.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Book {
@@ -14,13 +15,22 @@ public class Book {
     @Enumerated(EnumType.STRING)
     private BookStatus status;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    private Author author;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "books_authors",
+            joinColumns = {@JoinColumn(name = "book_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "author_id", referencedColumnName = "id")}
+    )
+    private List<Author> authors;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "publisher_id")
+    private Publisher publisher;
+
 
     public Long getId() {
         return id;
@@ -63,21 +73,32 @@ public class Book {
         this.status = status;
     }
 
-    public Author getAuthor() {
-        return author;
+    public List<Author> getAuthors() {
+        return authors;
     }
 
-    public void setAuthor(Author author) {
-        this.author = author;
+    public void setAuthors(List<Author> authors) {
+        this.authors = authors;
+    }
+
+    public Publisher getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
     }
 
     @Override
     public String toString() {
-        return "id=" + id +
+        return "Book{" +
+                "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
-                ", user=" + user.getUsername() +
-                ", author=" + author.getName();
+                ", user=" + user +
+                ", authors=" + authors +
+                ", publisher=" + publisher +
+                '}';
     }
 }

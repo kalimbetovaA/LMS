@@ -2,14 +2,17 @@ package kz.iitu.demo.controllers;
 
 
 import kz.iitu.demo.entity.Author;
+import kz.iitu.demo.entity.Book;
 import kz.iitu.demo.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 
-@Controller
+@RestController
+@RequestMapping("/authors")
 public class AuthorController {
 
     @Autowired
@@ -19,25 +22,37 @@ public class AuthorController {
         this.authorService = authorService;
     }
 
+    @GetMapping("")
     public List<Author> findAllAuthors() {
         return authorService.findAllAuthors();
     }
 
-    public Author findAuthorById(Long id) {
+    @GetMapping("/{id}")
+    public Author findAuthorById(@PathVariable Long id) {
         return authorService.findAuthorById(id);
     }
-    public Author findAuthorByName(String name) {
+
+
+    @GetMapping("/find/")
+    public Author findAuthorByName(@RequestParam String name) {
         return authorService.findAuthorByName(name);
     }
 
-    public void addAuthor(Author author) {
+    @PostMapping("")
+    public void addAuthor(@RequestBody Author author) {
         authorService.addAuthor(author);
     }
 
 
-    public void deleteAuthor(Long id) {
+    @DeleteMapping("/{id}")
+    public void deleteAuthor(@PathVariable Long id) {
         authorService.deleteAuthor(id);
     }
 
+    @PutMapping("/{id}")
+    public void updateAuthor(@PathVariable Long id,@RequestBody Author author) {
+        author.setId(id);
+        authorService.updateAuthor(author);
+    }
 
 }
